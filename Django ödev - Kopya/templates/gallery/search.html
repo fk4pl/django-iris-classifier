@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h1>Search Iris</h1>
+  <form method="get">
+    <label>Instance ID: <input type="text" name="instance_id" /></label>
+    <label>Species:
+      <select name="species">
+        <option value="">--</option>
+        <option value="setosa">Setosa</option>
+        <option value="versicolor">Versicolor</option>
+        <option value="virginica">Virginica</option>
+      </select>
+    </label>
+    <label>Min Sepal Length: <input type="text" name="min_sepal" /></label>
+    <input type="submit" value="Search" />
+  </form>
+
+  <h2>Results</h2>
+  <ul>
+    {% for r in results %}
+      <li>{{ r.instance_id }} - {{ r.get_species_display }} (sepal: {{ r.sepal_length }})</li>
+    {% empty %}
+      <li>No results</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
