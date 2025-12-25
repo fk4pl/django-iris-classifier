@@ -29,30 +29,6 @@ python manage.py runserver
 
 Tarayıcıda: **http://127.0.0.1:8000/**
 
-## Ana Özellikler
-
-### ✅ Tamamlanan Gereksinimler (100 puan)
-
-| # | Kriter | Puan | Durum |
-|---|--------|------|-------|
-| 1 | Main Data Model (IrisSample + Collection, 5+ field) | 10 | ✅ |
-| 2 | Relational Data Model (ManyToMany) | 10 | ✅ |
-| 3 | CRUD Pages (list/detail/create/update/delete) | 15 | ✅ |
-| 4 | Django Template Language | 10 | ✅ |
-| 5 | User Authentication (register/login/logout/password reset) | 10 | ✅ |
-| 6 | User Authorization (writer/reader roles) | 10 | ✅ |
-| 7 | Search (3+ fields, multi-criteria) | 10 | ✅ |
-| 8 | Import/Export CSV | 10 | ✅ |
-| 9 | HTML/CSS Requirements | 10 | ✅ |
-| 10 | Admin Interface | 5 | ✅ |
-
-### 🎁 Bonus Özellikler (20 puan)
-
-| # | Kriter | Puan | Durum |
-|---|--------|------|-------|
-| A | REST API (Django REST Framework) | 13 | ✅ |
-| B | ML Prediction (3 algoritma: LR, KNN, RF) | 7 | ✅ |
-
 ## URL Haritası
 
 | URL | Açıklama | Giriş Gerekli |
@@ -151,11 +127,3 @@ curl -X POST http://127.0.0.1:8000/api/iris/ \
 
 ### ML tahmin çalışmıyor
 - scikit-learn yüklü mü kontrol edin: `pip install scikit-learn`
-
-## Geliştirici Notları
-
-Proje şu anda geliştirme modundadır. İçeri dağıtım için:
-- `SECRET_KEY` değiştirin
-- `DEBUG = False` yapın
-- `ALLOWED_HOSTS` güncellen
-- Üretim veritabanı yapılandır (SQLite yerine PostgreSQL vb.)
