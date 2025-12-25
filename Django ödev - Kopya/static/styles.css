@@ -1,9 +1,0 @@
-body { font-family: Arial, Helvetica, sans-serif; background:#f4f4f8; }
-.container { max-width:980px; margin:12px auto; background:#fff; padding:18px; border:1px solid #e6e6e6; }
-h1,h2,h3 { color:#333; }
-table { border-collapse: collapse; }
-table td, table th { padding:8px; border:1px solid #ddd; }
-a { color: #0066cc; }
-.gallery-thumb { width:150px; border:1px solid #ccc; padding:4px; background:#fff; }
-.nav { margin-bottom:12px; }
-.card { border:1px solid #ddd; padding:8px; margin-bottom:8px; background:#fff; }
