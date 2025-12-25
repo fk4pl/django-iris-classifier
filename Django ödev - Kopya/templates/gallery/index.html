@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Iris Species Predictor</h1>
+  <p>Welcome to the Iris Species Classification System. Use the navigation menu to explore iris samples, search by species, or predict iris types using machine learning.</p>
+  <ul>
+    <li><a href="{% url 'gallery:iris_list' %}">View All Iris Samples</a> - Browse the complete dataset of 150 iris flowers</li>
+    <li><a href="{% url 'gallery:search' %}">Search Iris Samples</a> - Find samples by species or physical measurements</li>
+    <li><a href="{% url 'gallery:ml_predict' %}">ML Prediction</a> - Predict iris species using machine learning algorithms</li>
+  </ul>
+{% endblock %}

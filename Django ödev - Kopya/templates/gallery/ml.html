@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h1>ML Prediction</h1>
+  <form method="post">{% csrf_token %}
+    <label>Sepal Length: <input type="text" name="sepal_length"/></label><br/>
+    <label>Sepal Width: <input type="text" name="sepal_width"/></label><br/>
+    <label>Petal Length: <input type="text" name="petal_length"/></label><br/>
+    <label>Petal Width: <input type="text" name="petal_width"/></label><br/>
+    <label>Algorithm:
+      <select name="algo">
+        <option value="lr">Logistic Regression</option>
+        <option value="knn">K-Nearest Neighbors</option>
+        <option value="rf">Random Forest</option>
+      </select>
+    </label>
+    <input type="submit" value="Predict" />
+  </form>
+  {% if result %}
+    <h2>Prediction: {{ result }}</h2>
+  {% endif %}
+{% endblock %}
