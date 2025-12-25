@@ -29,26 +29,6 @@ python manage.py runserver
 
 Tarayıcıda: **http://127.0.0.1:8000/**
 
-## URL Haritası
-
-| URL | Açıklama | Giriş Gerekli |
-|-----|----------|---------------|
-| `/` | Ana galeri sayfası | Hayır |
-| `/iris/` | Iris örnekleri listesi | Hayır |
-| `/iris/<id>/` | Iris detayı | Hayır |
-| `/iris/add/` | Yeni iris ekle | **Evet (writer)** |
-| `/iris/<id>/edit/` | Iris güncelle | **Evet (writer)** |
-| `/iris/<id>/delete/` | Iris sil | **Evet (writer)** |
-| `/search/` | Ara (3 alan: ID, tür, sepal length) | Hayır |
-| `/import-csv/` | CSV yükle | **Evet** |
-| `/export-csv/` | CSV indir | Hayır |
-| `/ml/` | ML tahmin | Hayır |
-| `/accounts/login/` | Giriş | Hayır |
-| `/accounts/signup/` | Kayıt | Hayır |
-| `/accounts/password-reset/` | Parola değiştir | **Evet** |
-| `/admin/` | Django Admin | **Evet (admin)** |
-| `/api/iris/` | REST API | Hayır |
-
 ## Modeller
 
 ### IrisSample
