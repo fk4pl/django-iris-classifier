@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Manage Roles</h1>
+<p>Admin can assign or remove the writer role.</p>
+<table border="1" cellpadding="6" cellspacing="0">
+  <tr>
+    <th>Username</th>
+    <th>Email</th>
+    <th>Writer?</th>
+    <th>Action</th>
+  </tr>
+  {% for u in users %}
+  <tr>
+    <td>{{ u.username }}</td>
+    <td>{{ u.email }}</td>
+    <td>{% if writer_group in u.groups.all %}Yes{% else %}No{% endif %}</td>
+    <td>
+      <form method="post" style="display:inline;">
+        {% csrf_token %}
+        <input type="hidden" name="user_id" value="{{ u.id }}" />
+        {% if writer_group in u.groups.all %}
+          <input type="hidden" name="action" value="remove" />
+          <button type="submit">Remove writer</button>
+        {% else %}
+          <input type="hidden" name="action" value="add" />
+          <button type="submit">Make writer</button>
+        {% endif %}
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
