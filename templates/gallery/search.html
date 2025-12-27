@@ -1,26 +1,40 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
+<div class="card">
   <h1>Search Iris</h1>
+  <img src="{% static 'placeholder_large.png' %}" alt="Search Banner" class="img-responsive"
+    style="height:100px; object-fit:cover; width:100%;">
+
+  <h3>Filter Criteria</h3>
   <form method="get">
-    <label>Instance ID: <input type="text" name="instance_id" /></label>
-    <label>Species:
-      <select name="species">
-        <option value="">--</option>
-        <option value="setosa">Setosa</option>
-        <option value="versicolor">Versicolor</option>
-        <option value="virginica">Virginica</option>
-      </select>
-    </label>
-    <label>Min Sepal Length: <input type="text" name="min_sepal" /></label>
+    <div class="form-group">
+      <label>Instance ID: <input type="text" name="instance_id" value="{{ request.GET.instance_id }}" /></label>
+    </div>
+    <div class="form-group">
+      <label>Species:
+        <select name="species">
+          <option value="">-- All --</option>
+          <option value="setosa" {% if request.GET.species=='setosa' %}selected{% endif %}>Setosa</option>
+          <option value="versicolor" {% if request.GET.species=='versicolor' %}selected{% endif %}>Versicolor</option>
+          <option value="virginica" {% if request.GET.species=='virginica' %}selected{% endif %}>Virginica</option>
+        </select>
+      </label>
+    </div>
+    <div class="form-group">
+      <label>Min Sepal Length: <input type="text" name="min_sepal" value="{{ request.GET.min_sepal }}" /></label>
+    </div>
     <input type="submit" value="Search" />
   </form>
 
-  <h2>Results</h2>
-  <ul>
+  <h3>Results</h3>
+  <ul class="clean-list">
     {% for r in results %}
-      <li>{{ r.instance_id }} - {{ r.get_species_display }} (sepal: {{ r.sepal_length }})</li>
+    <li><a href="{% url 'gallery:iris_detail' r.pk %}">{{ r.instance_id }}</a> - {{ r.get_species_display }} (sepal: {{
+      r.sepal_length }})</li>
     {% empty %}
-      <li>No results</li>
+    <li>No results found matching your criteria.</li>
     {% endfor %}
   </ul>
+</div>
 {% endblock %}
