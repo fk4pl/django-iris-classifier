@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
-  <h1>Search Iris</h1>
+  <div style="display: flex; align-items: center; gap: 15px;">
+    <h1>Search Iris</h1>
+    <img src="{% static 'images/versicolor.png' %}" alt="Search Icon" style="height: 40px; opacity: 0.7;">
+  </div>
+  
   <form method="get">
     <label>Instance ID: <input type="text" name="instance_id" /></label>
     <label>Species:

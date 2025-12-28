@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load gallery_extras %}
+
 {% block content %}
   <h1>Iris Detail</h1>
+  
+  <h3>Measurements</h3>
   <table>
     <tr><td>Instance ID</td><td>{{ sample.instance_id }}</td></tr>
     <tr><td>Sepal Length</td><td>{{ sample.sepal_length }}</td></tr>
@@ -9,5 +14,20 @@
     <tr><td>Petal Width</td><td>{{ sample.petal_width }}</td></tr>
     <tr><td>Species</td><td>{{ sample.get_species_display }}</td></tr>
   </table>
-  <p><a href="{% url 'gallery:iris_update' sample.pk %}">Edit</a> | <a href="{% url 'gallery:iris_list' %}">Back</a></p>
+
+  <h3>Visual Representation</h3>
+  {% if sample.species == 'setosa' %}
+    <img src="{% static 'images/setosa.png' %}" alt="Setosa" style="max-width: 200px;">
+  {% elif sample.species == 'versicolor' %}
+    <img src="{% static 'images/versicolor.png' %}" alt="Versicolor" style="max-width: 200px;">
+  {% elif sample.species == 'virginica' %}
+    <img src="{% static 'images/virginica.png' %}" alt="Virginica" style="max-width: 200px;">
+  {% endif %}
+
+  <p>
+    {% if user.is_staff or user|has_group:"writer" %}
+      <a href="{% url 'gallery:iris_update' sample.pk %}">Edit</a> | 
+    {% endif %}
+    <a href="{% url 'gallery:iris_list' %}">Back</a>
+  </p>
 {% endblock %}

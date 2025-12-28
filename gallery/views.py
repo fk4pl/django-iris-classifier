@@ -140,6 +140,7 @@ def ml_predict(request):
             sw = float(request.POST.get('sepal_width') or 0)
             pl = float(request.POST.get('petal_length') or 0)
             pw = float(request.POST.get('petal_width') or 0)
+            algo = request.POST.get('algorithm')
 
             # Combine sklearn iris data with database IrisSample data
             data = load_iris()
@@ -157,8 +158,15 @@ def ml_predict(request):
             scaler = StandardScaler()
             X_scaled = scaler.fit_transform(X)
             
-            # Use KNN with n_neighbors=1 for maximum sensitivity to nearest neighbor
-            clf = KNeighborsClassifier(n_neighbors=1)
+            # Select algorithm
+            if algo == 'rf':
+                clf = RandomForestClassifier(n_estimators=100, random_state=42)
+            elif algo == 'lr':
+                clf = LogisticRegression(max_iter=200, random_state=42)
+            else:
+                # Default to KNN
+                clf = KNeighborsClassifier(n_neighbors=1)
+
             clf.fit(X_scaled, y)
             
             # Scale input prediction as well

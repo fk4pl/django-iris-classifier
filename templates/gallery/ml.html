@@ -3,6 +3,13 @@
 {% block content %}
   <h1>ML Prediction</h1>
   <form method="post">{% csrf_token %}
+    <label>Algorithm:
+      <select name="algorithm">
+        <option value="knn">K-Nearest Neighbors</option>
+        <option value="lr">Logistic Regression</option>
+        <option value="rf">Random Forest</option>
+      </select>
+    </label><br/>
     <label>Sepal Length: <input type="number" step="0.01" name="sepal_length" required/></label><br/>
     <label>Sepal Width: <input type="number" step="0.01" name="sepal_width" required/></label><br/>
     <label>Petal Length: <input type="number" step="0.01" name="petal_length" required/></label><br/>
