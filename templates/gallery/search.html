@@ -2,31 +2,31 @@
 {% load static %}
 
 {% block content %}
-  <div style="display: flex; align-items: center; gap: 15px;">
-    <h1>Search Iris</h1>
-    <img src="{% static 'images/versicolor.png' %}" alt="Search Icon" style="height: 40px; opacity: 0.7;">
-  </div>
-  
-  <form method="get">
-    <label>Instance ID: <input type="text" name="instance_id" /></label>
-    <label>Species:
-      <select name="species">
-        <option value="">--</option>
-        <option value="setosa">Setosa</option>
-        <option value="versicolor">Versicolor</option>
-        <option value="virginica">Virginica</option>
-      </select>
-    </label>
-    <label>Min Sepal Length: <input type="text" name="min_sepal" /></label>
-    <input type="submit" value="Search" />
-  </form>
+<div style="display: flex; align-items: center; gap: 15px;">
+  <h1>Search Iris</h1>
+  <img src="{% static 'images/versicolor.png' %}" alt="Search Icon" style="height: 40px; opacity: 0.7;">
+</div>
 
-  <h2>Results</h2>
-  <ul>
-    {% for r in results %}
-      <li>{{ r.instance_id }} - {{ r.get_species_display }} (sepal: {{ r.sepal_length }})</li>
-    {% empty %}
-      <li>No results</li>
-    {% endfor %}
-  </ul>
+<form method="get">
+  <label>Instance ID: <input type="text" name="instance_id" /></label>
+  <label>Species:
+    <select name="species">
+      <option value="">--</option>
+      <option value="setosa">Setosa</option>
+      <option value="versicolor">Versicolor</option>
+      <option value="virginica">Virginica</option>
+    </select>
+  </label>
+  <label>Min Sepal Length: <input type="text" name="min_sepal" /></label>
+  <input type="submit" value="Search" />
+</form>
+
+<h2>Results</h2>
+<ul>
+  {% for result in results %}
+  <li>{{ result.instance_id }} - {{ result.get_species_display }} (sepal: {{ result.sepal_length }})</li>
+  {% empty %}
+  <li>No results</li>
+  {% endfor %}
+</ul>
 {% endblock %}

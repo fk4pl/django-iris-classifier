@@ -16,18 +16,18 @@
 
   <table border="1" style="width:100%;margin-top:12px;border-collapse:collapse;">
     <tr><th>ID</th><th>Sepal L</th><th>Sepal W</th><th>Petal L</th><th>Petal W</th><th>Species</th><th>Actions</th></tr>
-    {% for s in samples %}
+    {% for sample in samples %}
       <tr>
-        <td>{{ s.instance_id }}</td>
-        <td>{{ s.sepal_length }}</td>
-        <td>{{ s.sepal_width }}</td>
-        <td>{{ s.petal_length }}</td>
-        <td>{{ s.petal_width }}</td>
-        <td>{{ s.get_species_display }}</td>
+        <td>{{ sample.instance_id }}</td>
+        <td>{{ sample.sepal_length }}</td>
+        <td>{{ sample.sepal_width }}</td>
+        <td>{{ sample.petal_length }}</td>
+        <td>{{ sample.petal_width }}</td>
+        <td>{{ sample.get_species_display }}</td>
         <td>
-          <a href="{% url 'gallery:iris_detail' s.pk %}">View</a>
+          <a href="{% url 'gallery:iris_detail' sample.pk %}">View</a>
           {% if user.is_staff or user|has_group:"writer" %}
-             | <a href="{% url 'gallery:iris_update' s.pk %}">Edit</a> | <a href="{% url 'gallery:iris_delete' s.pk %}">Delete</a>
+             | <a href="{% url 'gallery:iris_update' sample.pk %}">Edit</a> | <a href="{% url 'gallery:iris_delete' sample.pk %}">Delete</a>
           {% endif %}
         </td>
       </tr>

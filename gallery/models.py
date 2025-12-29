@@ -19,7 +19,7 @@ class IrisSample(models.Model):
 
 
 class Collection(models.Model):
-    # A simple model not related to auth, with many-to-many to IrisSample
+    # Kimlik doğrulama ile ilişkisi olmayan, IrisSample ile çoktan çoğa ilişkisi olan basit bir model
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

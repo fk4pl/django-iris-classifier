@@ -1,13 +1,11 @@
 import os
-from django.conf import settings
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
-from .models import IrisSample
-from .forms import IrisSampleForm, CSVImportForm
 import csv
 from io import TextIOWrapper
+
+from django.conf import settings
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
@@ -15,6 +13,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 
+from .models import IrisSample
+from .forms import IrisSampleForm, CSVImportForm
 
 
 def index(request):
@@ -33,8 +33,11 @@ def iris_detail(request, pk):
 
 @login_required
 def iris_create(request):
-    if not (request.user.is_staff or request.user.groups.filter(name='writer').exists()):
+    # Kullanıcının personel veya 'writer' (yazar) grubunda olup olmadığını kontrol et
+    is_writer = request.user.groups.filter(name='writer').exists()
+    if not (request.user.is_staff or is_writer):
         return HttpResponse('Permission denied', status=403)
+
     if request.method == 'POST':
         form = IrisSampleForm(request.POST)
         if form.is_valid():
@@ -42,14 +45,19 @@ def iris_create(request):
             return redirect('gallery:iris_list')
     else:
         form = IrisSampleForm()
+    
     return render(request, 'gallery/iris_form.html', {'form': form, 'action': 'Create'})
 
 
 @login_required
 def iris_update(request, pk):
-    if not (request.user.is_staff or request.user.groups.filter(name='writer').exists()):
+    # Kullanıcının personel veya 'writer' (yazar) grubunda olup olmadığını kontrol et
+    is_writer = request.user.groups.filter(name='writer').exists()
+    if not (request.user.is_staff or is_writer):
         return HttpResponse('Permission denied', status=403)
+
     sample = get_object_or_404(IrisSample, pk=pk)
+    
     if request.method == 'POST':
         form = IrisSampleForm(request.POST, instance=sample)
         if form.is_valid():
@@ -57,76 +65,114 @@ def iris_update(request, pk):
             return redirect('gallery:iris_detail', pk=pk)
     else:
         form = IrisSampleForm(instance=sample)
+    
     return render(request, 'gallery/iris_form.html', {'form': form, 'action': 'Edit'})
 
 
 @login_required
 def iris_delete(request, pk):
-    if not (request.user.is_staff or request.user.groups.filter(name='writer').exists()):
+    # Kullanıcının personel veya 'writer' (yazar) grubunda olup olmadığını kontrol et
+    is_writer = request.user.groups.filter(name='writer').exists()
+    if not (request.user.is_staff or is_writer):
         return HttpResponse('Permission denied', status=403)
+
     sample = get_object_or_404(IrisSample, pk=pk)
+    
     if request.method == 'POST':
         sample.delete()
         return redirect('gallery:iris_list')
+    
     return render(request, 'gallery/iris_confirm_delete.html', {'sample': sample})
 
 
 def search(request):
-    qs = IrisSample.objects.all()
-    q_id = request.GET.get('instance_id')
+    results = IrisSample.objects.all()
+    
+    query_id = request.GET.get('instance_id')
     species = request.GET.get('species')
     min_sepal = request.GET.get('min_sepal')
-    if q_id:
-        qs = qs.filter(instance_id=q_id)
+    
+    if query_id:
+        results = results.filter(instance_id=query_id)
+    
     if species:
-        qs = qs.filter(species=species)
+        results = results.filter(species=species)
+    
     if min_sepal:
         try:
-            qs = qs.filter(sepal_length__gte=float(min_sepal))
+            results = results.filter(sepal_length__gte=float(min_sepal))
         except ValueError:
             pass
-    return render(request, 'gallery/search.html', {'results': qs})
+            
+    return render(request, 'gallery/search.html', {'results': results})
 
 
 @login_required
 def import_csv(request):
-    if not (request.user.is_staff or request.user.groups.filter(name='writer').exists()):
+    # İzinleri kontrol et
+    is_writer = request.user.groups.filter(name='writer').exists()
+    if not (request.user.is_staff or is_writer):
         return HttpResponse('Permission denied', status=403)
+
     if request.method == 'POST':
         form = CSVImportForm(request.POST, request.FILES)
         if form.is_valid():
-            f = TextIOWrapper(request.FILES['csv_file'].file, encoding='utf-8')
-            reader = csv.DictReader(f)
+            csv_file = request.FILES['csv_file']
+            # Dosyayı metin modunda aç
+            text_file = TextIOWrapper(csv_file.file, encoding='utf-8')
+            reader = csv.DictReader(text_file)
+            
             count = 0
             for row in reader:
                 try:
+                    # Değerleri al veya varsayılan olarak 0 kullan
+                    instance_id = int(row.get('instance_id') or row.get('id') or 0)
+                    sepal_length = float(row.get('sepal_length') or row.get('sepal_length_cm') or 0)
+                    sepal_width = float(row.get('sepal_width') or 0)
+                    petal_length = float(row.get('petal_length') or 0)
+                    petal_width = float(row.get('petal_width') or 0)
+                    species = row.get('species') or row.get('label') or 'setosa'
+
                     IrisSample.objects.update_or_create(
-                        instance_id=int(row.get('instance_id') or row.get('id') or 0),
+                        instance_id=instance_id,
                         defaults={
-                            'sepal_length': float(row.get('sepal_length') or row.get('sepal_length_cm') or 0),
-                            'sepal_width': float(row.get('sepal_width') or 0),
-                            'petal_length': float(row.get('petal_length') or 0),
-                            'petal_width': float(row.get('petal_width') or 0),
-                            'species': row.get('species') or row.get('label') or 'setosa'
+                            'sepal_length': sepal_length,
+                            'sepal_width': sepal_width,
+                            'petal_length': petal_length,
+                            'petal_width': petal_width,
+                            'species': species
                         }
                     )
                     count += 1
                 except Exception:
                     continue
+            
             return HttpResponse(f'Imported {count} rows')
     else:
         form = CSVImportForm()
+        
     return render(request, 'gallery/import_csv.html', {'form': form})
 
 
 def export_csv(request):
-    qs = IrisSample.objects.all()
+    samples = IrisSample.objects.all()
+    
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="iris_export.csv"'
+    
     writer = csv.writer(response)
     writer.writerow(['instance_id', 'sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'species'])
-    for s in qs:
-        writer.writerow([s.instance_id, s.sepal_length, s.sepal_width, s.petal_length, s.petal_width, s.species])
+    
+    for sample in samples:
+        writer.writerow([
+            sample.instance_id, 
+            sample.sepal_length, 
+            sample.sepal_width, 
+            sample.petal_length, 
+            sample.petal_width, 
+            sample.species
+        ])
+        
     return response
 
 
@@ -134,53 +180,71 @@ def ml_predict(request):
     result = None
     error = None
     image_name = None
+    
     if request.method == 'POST':
         try:
-            sl = float(request.POST.get('sepal_length') or 0)
-            sw = float(request.POST.get('sepal_width') or 0)
-            pl = float(request.POST.get('petal_length') or 0)
-            pw = float(request.POST.get('petal_width') or 0)
-            algo = request.POST.get('algorithm')
+            # Giriş değerlerini al ve ondalıklı sayıya çevir
+            sepal_length = float(request.POST.get('sepal_length') or 0)
+            sepal_width = float(request.POST.get('sepal_width') or 0)
+            petal_length = float(request.POST.get('petal_length') or 0)
+            petal_width = float(request.POST.get('petal_width') or 0)
+            algorithm = request.POST.get('algorithm')
 
-            # Combine sklearn iris data with database IrisSample data
+            # Kütüphaneden yardımcı verileri yükle
             data = load_iris()
-            X = list(data.data)
-            y = list(data.target)
+            features = list(data.data)
+            labels = list(data.target)
             
-            # Add database samples
+            # Veritabanımızdaki verileri ekle
             db_samples = IrisSample.objects.all()
             species_map = {'setosa': 0, 'versicolor': 1, 'virginica': 2}
+            
             for sample in db_samples:
-                X.append([sample.sepal_length, sample.sepal_width, sample.petal_length, sample.petal_width])
-                y.append(species_map.get(sample.species.lower(), 0))
+                features.append([
+                    sample.sepal_length, 
+                    sample.sepal_width, 
+                    sample.petal_length, 
+                    sample.petal_width
+                ])
+                labels.append(species_map.get(sample.species.lower(), 0))
             
-            # Scale features for better model performance
+            # Model için verileri hazırla
             scaler = StandardScaler()
-            X_scaled = scaler.fit_transform(X)
+            features_scaled = scaler.fit_transform(features)
             
-            # Select algorithm
-            if algo == 'rf':
-                clf = RandomForestClassifier(n_estimators=100, random_state=42)
-            elif algo == 'lr':
-                clf = LogisticRegression(max_iter=200, random_state=42)
+            # Sınıflandırıcıyı seç
+            if algorithm == 'rf':
+                classifier = RandomForestClassifier(n_estimators=100, random_state=42)
+            elif algorithm == 'lr':
+                classifier = LogisticRegression(max_iter=200, random_state=42)
             else:
-                # Default to KNN
-                clf = KNeighborsClassifier(n_neighbors=1)
+                classifier = KNeighborsClassifier(n_neighbors=1)
 
-            clf.fit(X_scaled, y)
+            # Modeli eğit
+            classifier.fit(features_scaled, labels)
             
-            # Scale input prediction as well
-            test_input_scaled = scaler.transform([[sl, sw, pl, pw]])
-            pred = clf.predict(test_input_scaled)[0]
-            species = data.target_names[pred]
-            result = species
-            image_lookup = {
+            # Yeni giriş için tür tahmini yap
+            input_data = [[sepal_length, sepal_width, petal_length, petal_width]]
+            input_scaled = scaler.transform(input_data)
+            
+            prediction_index = classifier.predict(input_scaled)[0]
+            predicted_species = data.target_names[prediction_index]
+            
+            result = predicted_species
+            
+            # Sonuç için görseli al
+            species_images = {
                 'setosa': 'images/setosa.png',
                 'versicolor': 'images/versicolor.png',
                 'virginica': 'images/virginica.png',
             }
-            image_name = image_lookup.get(species)
+            image_name = species_images.get(predicted_species)
+                
         except (ValueError, TypeError):
             error = 'Please enter valid decimal numbers for all measurements'
-    return render(request, 'gallery/ml.html', {'result': result, 'error': error, 'image_name': image_name})
-
+            
+    return render(request, 'gallery/ml.html', {
+        'result': result, 
+        'error': error, 
+        'image_name': image_name
+    })

@@ -33,7 +33,7 @@ def manage_roles(request):
     if not request.user.is_staff:
         return HttpResponse('Permission denied', status=403)
 
-    writer_group, _ = Group.objects.get_or_create(name='writer')
+    writer_group, created = Group.objects.get_or_create(name='writer')
 
     if request.method == 'POST':
         user_id = request.POST.get('user_id')
